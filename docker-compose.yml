@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: cpse_harmonizer_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: sih2026password
+      MONGO_INITDB_DATABASE: cpse_harmonizer
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cpse_material_harmonizer
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:sih2026password@mongodb:27017/cpse_harmonizer?authSource=admin
+      - JWT_SECRET=cpcl-mopng-sih-2026-secret-key
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:
